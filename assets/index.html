@@ -1,0 +1,111 @@
+<html>
+<head>
+  <link rel="stylesheet" href="style.css">
+  <!-- <link rel="stylesheet" href="dark_style.css"> -->
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.time.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.threshold.js"></script>
+  <script src="script.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400" rel="stylesheet">
+</head>
+<body>
+
+  <div id="header-back">
+
+  <div id="header">
+    <h2 style="text-align:center;">EXOSITE MURANO MACHINE CONTROL DEMO</h2>
+  </div>
+  </div>
+
+  <div id="contentbody">
+    <div id="content">
+      <!-- <h3>Device Identifier: <span id="currentdevice"></span></h3> -->
+      <div class="tg-wrap"><table class="tg">
+        <tr>
+          <th class="tg-weho">CONTROL</th>
+          <th class="tg-weho">STATUS</th>
+          <th class="tg-weho">SET TEMP</th>
+          <th class="tg-weho">CURRENT TEMP</th>
+        </tr>
+        <tr>
+          <td class="tg-dmlx">
+            <div style="margin: auto;" class="onoffswitch">
+              <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch">
+              <label class="onoffswitch-label" for="myonoffswitch">
+                  <span class="onoffswitch-inner"></span>
+                  <span class="onoffswitch-switch"></span>
+              </label>
+            </div>
+          </td>
+          <td class="tg-dmlx"><p id="statusbox"> </p></td>
+          <td class="tg-dmlx"><p id="settempbox"> </p></td>
+          <td class="tg-dmlx"><p id="currenttempbox"> </p></td>
+        </tr>
+        <tr>
+          <th colspan=2 class="tg-weho">MACHINE TEMP REQUEST</th>
+          <th colspan=2 class="tg-weho"></th>
+        </tr>
+        <tr>
+          <td colspan=2 class="tg-weho" >
+            <input id="tempset" type="text" value="" style="text-align: right; width:5em;height:33px"></input>
+            <button type="button" id="tempsetbutton" name="request" value="" class="css3button">REQUEST</button>
+            <br>
+            <p id="requestnote" style="margin-left:5px;font-style: italic;font-size: small;color: grey;height:1em;"> </p>
+          </td>
+          <td colspan=2 class="tg-dmlx">
+          </td>
+        </tr>
+      </table>
+    </div>
+
+      <div style="margin: 5px auto 5px auto;">
+        <div id="graphmessage" style="text-align:center;height:1em;"></div>
+      </div>
+      <div class="demo-container">
+        <div id="graph" class="demo-placeholder" style="text-align:center;"></div>
+      </div>
+
+      <p></p>
+
+
+      <table width="90%" style="font-size:smaller;">
+        <col width="300px" />
+        <tr>
+          <td><p>Device Identifer: </p> </td>
+          <td><p><input id="specificdevice" type="text" value="" style="text-align: right; width:10em"></input><p></td>
+        </tr>
+        <!-- <tr>
+          <td><p>Time between Graph Refresh:</p></td>
+          <td><p><input id="updateInterval" type="text" value="" style="text-align: right; width:10em"></input>  seconds [0 = stop]</p></td>
+        </tr>-->
+        <tr>
+          <td><p>Graph Time Window:</p></td>
+          <td><p style="font-style: italic;font-size: small;color: grey;"><input id="timeWindow" type="text" value="" style="text-align: right; width:10em"></input> In Minutes</p></td>
+        </tr>
+  <!--
+        <tr>
+          <td><p>Machine Temperature Request:</p></td>
+          <td><p style="font-style: italic;font-size: small;color: grey;"><input id="tempset" type="text" value="" style="text-align: right; width:10em"></input>Make Remote Request</p></td>
+        </tr> -->
+        <!-- <tr>
+          <td><p>Temperature Alert Threshold:</p></td>
+          <td><p><input id="threshold" type="text" value="" style="text-align: right; width:10em"></input></p></td>
+        </tr>
+        <tr>
+          <td><p>Alert Threshold Contact:</p></td>
+          <td><p><input id="contactph" type="text" value="" style="text-align: right; width:10em"></input> Phone Number </p></td>
+        </tr>
+        <tr> -->
+          <td><p>Application Status: </p></td>
+          <td><span id="appstatus"> </span></td>
+        </tr>
+        <tr>
+          <td><p>Application Console:</td>
+            <td> <span id="appconsole"> </span></p></td>
+          </tr>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

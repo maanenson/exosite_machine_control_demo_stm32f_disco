@@ -1,0 +1,14 @@
+{
+  "default_page": "index.html",
+  "file_dir": "assets",
+  "custom_api": "api_routes.lua",
+  "modules": {
+    "util": "modules/util.lua",
+    "debug_listen": "modules/debug_listen.lua"
+  },
+  "event_handler": {
+    "device": {
+      "datapoint": "service_handlers/product.lua"
+    }
+  }
+}
