@@ -1,14 +1,15 @@
 # Murano Product Spec File, Machine Control Demo
 
+
 resources:
 -   alias: temperature
     format: float
+-   alias: state
+    format: string
 -   alias: uptime
     format: integer
 -   alias: tempset
     format: float
--   alias: uptime
-    format: integer
 -   alias: control
     format: integer
     initial: 0
@@ -17,3 +18,5 @@ resources:
 -   alias: cloud_control
     format: integer
     initial: 0
+-   alias: uptime
+    format: integer
