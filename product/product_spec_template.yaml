@@ -1,4 +1,4 @@
-# Murano Product Spec File - Machine Control Demo
+# Murano Product Spec File, Machine Control Demo
 
 resources:
 -   alias: temperature
