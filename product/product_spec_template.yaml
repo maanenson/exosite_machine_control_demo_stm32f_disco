@@ -13,9 +13,9 @@ resources:
 -   alias: control
     format: integer
     initial: 0
--   alias: cloudtempset
+-   alias: cloud_tempset
     format: float
--   alias: cloudcontrol
+-   alias: cloud_control
     format: integer
     initial: 0
 -   alias: uptime
