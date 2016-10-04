@@ -4,7 +4,7 @@
 resources:
 -   alias: temperature
     format: float
--   alias: state
+-   alias: status
     format: string
 -   alias: uptime
     format: integer
