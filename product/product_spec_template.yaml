@@ -3,8 +3,6 @@
 resources:
 -   alias: temperature
     format: float
--   alias: state
-    format: string
 -   alias: uptime
     format: integer
 -   alias: tempset
