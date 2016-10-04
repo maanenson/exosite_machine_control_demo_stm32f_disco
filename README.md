@@ -16,23 +16,31 @@ I apologize for this and am working on that.*
 
 # Assumptions
 - You have the hardware described above along with USB Cable (Power and connection to your computer) and Ethernet cable with active internet connection (to communicate with Exosite's Murano platform).  
+
 - You have an account on https://developer.mbed.org/ and have some knowledge for how to use it to compile downloads for your board.  The Discovery development kit comes pre-loaded with a bootloader that works with mbed.
 
+- You have an Exosite Murano account or will create one. https://exosite.io/
 
 # Quick Start Guide
 
 1. Connect the Discovery dev kit to your computer with the USB Cable.  This should show up as a Mass Storage device on  your computer (Like a USB Thumb Drive).  
+
 2. Connect the dev kit to an active internet connection using an Ethernet cable.
-3. Import the demo application [found here](https://developer.mbed.org/users/maanenson/code/EXOSITE_DISCO-F746NG_MACHINE_DEMO/) by either click on the 'Import into Compiler' button on the right side or clicking this [link](https://developer.mbed.org/compiler/#import:/users/maanenson/code/EXOSITE_DISCO-F746NG_MACHINE_DEMO/)
+
+3. Import the demo application
+  [found here](https://developer.mbed.org/users/maanenson/code/EXOSITE_DISCO-F746NG_MACHINE_DEMO/) by either click on the 'Import into Compiler' button on the right side or clicking this [link](https://developer.mbed.org/compiler/#import:/users/maanenson/code/EXOSITE_DISCO-F746NG_MACHINE_DEMO/)
+
   ![imported](readme_assets/import_into_compiler.png)
 
 4. In the Compiler IDE window, you should see a program called "EXOSITE_DISCO-F746NG_MACHINE_DEMO" now.  Click on main.cpp, which is the main application file.
+
   ![imported](readme_assets/imported_program_in_mbed.png)
 
-5. Create a new Product in your Murano account. (Create a new account if you do not have one already)
+5. Create a new Product in your Murano account. (Create a new account if you do not have one already) https://www.exosite.io/business/products
+
   - Select 'Start from scratch' option and use the following link for your template: https://raw.githubusercontent.com/maanenson/exosite_machine_control_demo_stm32f_disco/master/product/product_spec_template.yaml
 
-    **IMPORTANT NOTE: Using this template file to create the definition for a product does not  work correctly.  A bug has been submitted with Murano R&D team.  Have to create from scratch in the mean-time.**
+    **IMPORTANT NOTE: Using this template file to create the definition for a product does not  work correctly.  A bug has been submitted with Murano R&D team.  Have to create the defintion from scratch in the mean-time.**
     ![imported](readme_assets/create_product.png)
 
     Your Product Definition should look like the following after Adding your product.
