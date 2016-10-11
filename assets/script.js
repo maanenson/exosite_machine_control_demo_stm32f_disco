@@ -2,7 +2,6 @@ $(function() {
 
 		//REPLACE DEVICE UNIQUE IDENTIFIER / SERIAL NUMBER HERE
 		var myDevice = '00:02:f7:f0:00:00'; //default unique device identifier
-		var phonenumber = '+18577191066';
 
 		//REPLACE WITH FULL APP DOMAIN IF RUNNING LOCALLY, OTHEWISE LEAVE AS "/"
     var app_domain = '/';
@@ -138,7 +137,7 @@ $(function() {
 	          // websocket is closed.
 						console.log('WebSocket Closed');
 						$("#appstatus").text("WebSocket Connection Closed...");
-						//startwebsocket();
+						startwebsocket();
 	       };
 	    }
 	    else
