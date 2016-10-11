@@ -80,10 +80,11 @@ end
 
 
 --#ENDPOINT GET /debug/storage/keyvalue
--- Description: Show current key-value for full solution DEBUG USE ONLY
-
+-- Description: Show all key-value data for full solution
+-- Key/Value is used to store Device 'Digital Twin' data and App Websocket subscriptions (pub/sub) 
+-- DEBUG USE ONLY
 if true then
-  local response_text = 'Getting Key Value Raw Data for: Full Solution: \r\n'
+  local response_text = 'Key Value Raw Data for full solution: \r\n'
   local resp = Keystore.list()
   --response_text = response_text..'Solution Keys\r\n'..to_json(resp)..'\r\n'
   if resp['keys'] ~= nil then
@@ -92,21 +93,11 @@ if true then
     while n <= num_keys do
       local id = resp['keys'][n]
       local response = Keystore.get({key = id})
-      response_text = response_text..id..'\r\n'
-      response_text = response_text..'KeyValue: '..to_json(response['value'])..'\r\n'
-      --[[
-      -- print out each value on new line
-      local item_json,err = from_json(response['value'])
-      if err == nil and type(item_json)=='table' then
+      response_text = response_text..':Key   ->'..id..'\r\n'
+      response_text = response_text..':Value ->'..to_json(response['value'])..'\r\n'
 
-        for key,val in pairs(item_json) do
-          response_text = response_text.. '   '..key..' : '.. tostring(val) ..'\r\n'
-        end
-      else
-        response_text = response_text..'KeyValue: '..to_json(response['value'])..'\r\n'
-      end
-      --]]
       n = n + 1
+      response_text = response_text..':\r\n'
     end
   end
   return response_text
