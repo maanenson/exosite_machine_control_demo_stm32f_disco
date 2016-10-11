@@ -1,7 +1,5 @@
 --digital twin functionality module
 
-
-
 local virt_device_specification = {
   meta = {
     pid = nil,
@@ -68,17 +66,18 @@ end
 -- Digital Twin - Websocket Subscription
 -- Open / Close websocket subscrtiption for a specific device
 local function virt_dev_ws_subscriptions(sn,e)
-  local full_id = tostring(e.socket_id) .. "/" .. tostring(e.server_ip)
+  local websocket_id = tostring(e.socket_id) .. "/" .. tostring(e.server_ip)
 
   if e.type == "data" then
     return '{"type":"info","message":"messages from client not supported"}'
   elseif e.type == "open" then
-    put_kv_list(device_key(sn)..'_subscribers', full_id)
-    print('ws open,'..tostring(full_id)..',device:'..tostring(sn))
+    put_kv_list('subscribers_'..device_key(sn), websocket_id)
+    print('ws open,'..tostring(websocket_id)..',device:'..tostring(sn))
     return '{"type":"info","message":"subscription open for device: '..tostring(sn)..'"}'
   elseif e.type == "close" then
-    print('ws close,'..tostring(full_id))
-    del_kv_list(device_key(sn)..'_subscribers', full_id)
+    print('ws close,'..tostring(websocket_id))
+    del_kv_list('subscribers_'..device_key(sn), websocket_id)
+
   end
 end
 
@@ -86,7 +85,7 @@ end
 -- Will send data to any subscribers
 local function virt_dev_ws_publish(sn, msg)
   -- get list of websockets currently subscribed
-  local subscribers = get_kv_list(device_key(sn)..'_subscribers')
+  local subscribers = get_kv_list('subscribers_'..device_key(sn))
   --print('ws:subscribers:'.. to_json(subscribers))
 
   -- send message to each subscriber

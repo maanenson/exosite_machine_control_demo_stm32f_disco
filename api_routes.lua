@@ -10,7 +10,7 @@ if true then
   local data = {}
 
   if getts == 1 then
-    data['timeseries'] = virt_dev_ts_query(identifier, "SELECT value FROM temperature", "time > now() - "..window.."m LIMIT 5000")
+    data['timeseries'] = virt_dev_ts_query(identifier, "SELECT value FROM temperature,tempset", "time > now() - "..window.."m LIMIT 5000")
   end
 
   if getkv == 1 then
@@ -80,11 +80,9 @@ end
 
 
 --#ENDPOINT GET /debug/storage/keyvalue
--- Description: Show current key-value data for a specific unique device or for full solution
--- Parameters: ?identifier=<uniqueidentifier>
-local identifier = tostring(request.parameters.identifier)
+-- Description: Show current key-value for full solution DEBUG USE ONLY
 
-if identifier == 'all' or identifier == "nil" then
+if true then
   local response_text = 'Getting Key Value Raw Data for: Full Solution: \r\n'
   local resp = Keystore.list()
   --response_text = response_text..'Solution Keys\r\n'..to_json(resp)..'\r\n'
@@ -95,40 +93,21 @@ if identifier == 'all' or identifier == "nil" then
       local id = resp['keys'][n]
       local response = Keystore.get({key = id})
       response_text = response_text..id..'\r\n'
-      response_text = response_text..'Data: '..to_json(response['value'])..'\r\n'
+      response_text = response_text..'KeyValue: '..to_json(response['value'])..'\r\n'
+      --[[
       -- print out each value on new line
-      --for key,val in pairs(from_json(response['value'])) do
-      --  response_text = response_text.. '   '..key..' : '.. val ..'\r\n'
-      --end
+      local item_json,err = from_json(response['value'])
+      if err == nil and type(item_json)=='table' then
+
+        for key,val in pairs(item_json) do
+          response_text = response_text.. '   '..key..' : '.. tostring(val) ..'\r\n'
+        end
+      else
+        response_text = response_text..'KeyValue: '..to_json(response['value'])..'\r\n'
+      end
+      --]]
       n = n + 1
     end
   end
   return response_text
-else
-  --local resp = Keystore.get({key = "identifier_" .. identifier})
-  local identifier = "identifier_" .. string.gsub(request.body.identifier, ":", "")
-  print(identifier)
-  local resp = kv_read(identifier)
-  return 'Getting Key Value Raw Data for: Device Identifier: '..identifier..'\r\n'..to_json(resp)
-end
-
---#ENDPOINT GET /debug/storage/timeseries
--- Description: Show current time-series data for a specific unique device
--- Parameters: ?identifier=<uniqueidentifier>
-local identifier = tostring(request.parameters.identifier)
-identifier = string.gsub(identifier, ":", "")
-
-if tostring ~= nil and tostring ~= "" then
-  local data = {}
-  -- Assumes temperature and humidity data device resources
-  out = Timeseries.query({
-    epoch='ms',
-    q = "SELECT value FROM temperature,humidity WHERE identifier = '" ..identifier.."' LIMIT 20"})
-  data['timeseries'] = out
-
-  return 'Getting Last 20 Time Series Raw Data Points for: '..identifier..'\r\n'..to_json(out)
-else
-  response.message = "Conflict - Identifier Incorrect"
-  response.code = 404
-  return
 end
