@@ -4,7 +4,7 @@
   "custom_api": "api_routes.lua",
   "modules": {
     "util": "modules/util.lua",
-    "debug_listen": "modules/debug_listen.lua"
+    "digital_twin": "modules/digital_twin.lua"
   },
   "event_handler": {
     "device": {

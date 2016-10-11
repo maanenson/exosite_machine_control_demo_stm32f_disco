@@ -6,6 +6,8 @@ $(function() {
 
 		//REPLACE WITH FULL APP DOMAIN IF RUNNING LOCALLY, OTHEWISE LEAVE AS "/"
     var app_domain = '/';
+		var websocket_domain = 'wss://' + document.location.hostname
+
 
 		var data = [];
 		var updateInterval = 5; //seconds for graph
@@ -54,6 +56,8 @@ $(function() {
     $("#appconsole").css('color', '#555555');
 		$("#graphmessage").text('Graph: Retrieving Data Now....');
 
+
+
 		function startwebsocket() {
 			console.log('starting websocket connectino to Murano Custom API');
 			console.log('domain:'+app_domain);
@@ -64,59 +68,77 @@ $(function() {
 			  $("#appstatus").css('color', '#555555');
 
 	       // Let us open a web socket
-	       var ws = new WebSocket("wss://machine-control-demo.apps.exosite.io/realtime");
+				 var ws_url = websocket_domain + "/realtime" + "?identifier="+myDevice;
+				 console.log("ws url:"+ws_url);
+	       var ws = new WebSocket(websocket_domain +  "/realtime");
 
 	       ws.onopen = function()
 	       {
-	          // Web Socket is connected, send data using send()
-	          //ws.send("Message to send");
+	          // Web Socket is connected
+						console.log('WebSocket opened');
 	          $("#appstatus").text("WebSocket opened");
+						//ws.send({"identifier"=myDevice);
 	       };
 
 	       ws.onmessage = function (evt)
 	       {
+					 //console.log(event);
 					 try {
 							var received_msg = JSON.parse(evt.data);
-							//console.log(received_msg);
+							console.log('WebSocket Msg: ' + received_msg);
 	            //$("#appconsole").text('Data:' + String(received_msg));
 							var json_obj = JSON.parse(received_msg);
-							console.log(json_obj.value);
-							if(json_obj.resource == "status")
+							console.log(json_obj.type);
+							if(json_obj.type)
 							{
-								$("#statusbox").text(''+json_obj['value']);
-								if(last_status != json_obj['value'])
-								{
-									last_status = json_obj['value'];
-									if(json_obj['value'] == "Off")
-									{
-										console.log('device now off');
-										$('#myonoffswitch').attr('checked', false);
-									}
-									else
-									{
-										console.log('device now on');
-										$('#myonoffswitch').attr('checked', true);
-									}
-								}
-							}
-							else if(json_obj.resource == "temperature")
-							{
-								$("#currenttempbox").text(''+json_obj['value']);
-							}
-							else if(json_obj.resource == "tempset")
-							{
-								$("#settempbox").text(''+json_obj['value']);
-							}
+								switch(json_obj.type) {
+								    case "data":
+								      //console.log(json_obj.value)
+											if(json_obj.resource == "status")
+											{
+												$("#statusbox").text(''+json_obj['value']);
+												if(last_status != json_obj['value'])
+												{
+													last_status = json_obj['value'];
+													if(json_obj['value'] == "Off")
+													{
+														console.log('device now off');
+														$('#myonoffswitch').attr('checked', false);
+													}
+													else
+													{
+														console.log('device now on');
+														$('#myonoffswitch').attr('checked', true);
+													}
+												}
+											}
+											else if(json_obj.resource == "temperature")
+											{
+												$("#currenttempbox").text(''+json_obj['value']);
+											}
+											else if(json_obj.resource == "tempset")
+											{
+												$("#settempbox").text(''+json_obj['value']);
+											}
 
+								      break;
+								    case "info":
+								      console.log(json_obj.message)
+								      break;
+								  }
+							}
 						} catch(err) {
 							$("#appconsole").text(err.message);
+							console.log('WebSocket Error: '+err.message);
 						};
 	       };
 
 	       ws.onclose = function()
 	       {
 	          // websocket is closed.
+						console.log('WebSocket Closed');
 						$("#appstatus").text("WebSocket Connection Closed...");
+						//startwebsocket();
 	       };
 	    }
 	    else
@@ -145,6 +167,8 @@ $(function() {
 					try {
 						if ('keyvalue' in newdata)
 						{
+							console.log(newdata)
+
 							if(jQuery.isEmptyObject(newdata.keyvalue)) {
 								console.log('empty data, device may not exist');
 							}
@@ -153,18 +177,18 @@ $(function() {
 								console.log('keyvalue error');
 							} else {
 								console.log('new keyvalue data');
-								var current_value = eval(newdata.keyvalue);
-								console.log(current_value);
-								json_value = JSON.parse(current_value['value']);
-								console.log(json_value);
+								//var current_value = eval(newdata.keyvalue);
+								//console.log(current_value);
+								//json_value = JSON.parse(current_value['value']);
+								//console.log(json_value);
 								//console.log("time:"+ncurrent_value.timestamp);
-								if ('temperature' in json_value) $("#currenttempbox").text(''+json_value['temperature']);
-								if ('status' in json_value) {
-									$("#statusbox").text(''+json_value['status']);
-									if(last_status != json_value['status'])
+								if ('temperature' in newdata.keyvalue.state.device) $("#currenttempbox").text(''+newdata.keyvalue.state.device['temperature']);
+								if ('status' in newdata.keyvalue.state.device) {
+									$("#statusbox").text(''+newdata.keyvalue.state.device['status']);
+									if(last_status != newdata.keyvalue.state.device['status'])
 									{
-										last_status = json_value['status'];
-										if(json_value['status'] == "Off")
+										last_status = newdata.keyvalue.state.device['status'];
+										if(newdata.keyvalue.state.device['status'] == "Off")
 										{
 											console.log('device now off');
 											$('#myonoffswitch').attr('checked', false);
@@ -176,11 +200,10 @@ $(function() {
 										}
 									}
 								}
-								if ('tempset' in json_value) $("#settempbox").text(''+json_value['tempset']);
+								if ('tempset' in newdata.keyvalue.state.device) $("#settempbox").text(''+newdata.keyvalue.state.device['tempset']);
 								getkv = 0;  //only get at first to make sure we have initial data
-
-
 							}
+
 						}
 
 						if ('timeseries' in newdata) {
@@ -214,7 +237,7 @@ $(function() {
 							else if (jQuery.isEmptyObject(newdata.timeseries.results[0]))
 							{
 								//Database error
-								console.log('no valid data in db, check device')
+								console.log('no valid timeseries data in db, check device')
 								$("#appconsole").text('No data for this device');
 								$("#graphmessage").text('Data Not Available for: '+myDevice);
 							}
@@ -286,7 +309,7 @@ $(function() {
 					getts="1";
 				}
 				$.ajax({
-					url: app_domain+"development/device/data?identifier="+myDevice+"&window="+timeWindow+"&getts="+getts+"&getkv="+getkv,
+					url: app_domain+"device/data?identifier="+myDevice+"&window="+timeWindow+"&getts="+getts+"&getkv="+getkv,
 					async: true,
 					type: "GET",
 					dataType: "json",
@@ -305,8 +328,6 @@ $(function() {
 
 			}
 
-
-		// Set up the control widget
 
 		$("#updateInterval").val(updateInterval).change(function () {
 			var v = $(this).val();
@@ -349,7 +370,7 @@ $(function() {
 		    }
 
 				$.ajax({
-					url: app_domain+"development/device",
+					url: app_domain+"device",
 					type: "post",
 					//dataType: "json",
 					//success: onDataReceived,
@@ -369,48 +390,13 @@ $(function() {
 
 		});
 
-
-
-		$("#threshold").val(t).change(function () {
-			var v = $(this).val();
-			if (v && !isNaN(+v)) {
-				t = +v;
-				if (t < 1) {
-					t = 1;
-				} else if (t > 100) {
-					t = 100;
-				}
-				$(this).val("" + t);
-
-				$.ajax({
-					url: app_domain+"development/device",
-					type: "post",
-					//dataType: "json",
-					//success: onDataReceived,
-					contentType: "application/json",
-					data: JSON.stringify({ "identifier": myDevice, "threshold": t }),
-					crossDomain: true,
-					//error: onError,
-					statusCode: {
-						504: function() {
-							console.log( "server not responding" );
-							$("#appstatus").text('Server Not Responding 504');
-							$("#appstatus").css('color', red_color);
-						}
-					}
-					,timeout: 4000
-				});
-
-			}
-		});
-
 		$("#tempsetbutton").click(function(){
 
 			console.log('sending requested temp setting:'+tempset);
 			$("#requestnote").text("requesting...");
 
 			$.ajax({
-				url: app_domain+"development/device",
+				url: app_domain+"device",
 				type: "post",
 				//dataType: "json",
 				success: function() {
@@ -445,62 +431,7 @@ $(function() {
 				}
 				$(this).val("" + tmp_tempset);
 				tempset = tmp_tempset;
-
-				/*
-				console.log('sending requested temp setting:'+tempset);
-
-				$.ajax({
-					url: app_domain+"development/device",
-					type: "post",
-					//dataType: "json",
-					success: function() {
-						$("#tempset").val(""); //clear form field
-					},
-					contentType: "application/json",
-					data: JSON.stringify({ "identifier": myDevice, "tempset": tempset }),
-					crossDomain: true,
-					//error: onError,
-					statusCode: {
-						504: function() {
-							console.log( "server not responding" );
-							$("#appstatus").text('Server Not Responding 504');
-							$("#appstatus").css('color', red_color);
-						}
-					}
-					,timeout: 4000
-				});
-				*/
-
 			}
-		});
-
-		$("#contactph").val(phonenumber).change(function () {
-			var v = $(this).val();
-			if (v) {
-				phonenumber = v;
-				console.log('new phone :' + phonenumber);
-				$(this).val("" + phonenumber);
-			}
-
-			$.ajax({
-				url: app_domain+"development/contact",
-				type: "post",
-				//dataType: "json",
-				//success: onDataReceived,
-				contentType: "application/json",
-				data: JSON.stringify({ "identifier": myDevice, "phonenumber": phonenumber }),
-				crossDomain: true,
-				//error: onError,
-				statusCode: {
-					504: function() {
-						console.log( "server not responding" );
-						$("#appstatus").text('Server Not Responding 504');
-						$("#appstatus").css('color', red_color);
-					}
-				}
-				,timeout: 4000
-			});
-
 		});
 
 		$("#specificdevice").val(myDevice).change(function () {
