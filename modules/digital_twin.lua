@@ -1,6 +1,6 @@
 --digital twin functionality module
 
-local virt_device_specification = {
+local digital_twin_specification = {
   meta = {
     pid = nil,
     identifier = nil
@@ -34,7 +34,7 @@ local function device_key(sn)
 end
 
 -- Get Digital Twin of device or boot strap new
-local function virt_dev(sn)
+local function digital_twin(sn)
   local virtual_device = nil
   local devicekey = device_key(sn)
 
@@ -46,7 +46,7 @@ local function virt_dev(sn)
     virtual_device = from_json(resp.value)
   else
     -- bootstrap device table and store in key-value for fututure use
-    virtual_device = virt_device_specification
+    virtual_device = digital_twin_specification
     virtual_device.meta.identifier = sn
     --device.rid = lookup_rid(device.meta.pid, sn)
     local resp = Keystore.set({key = devicekey, value = to_json(virtual_device)})
@@ -57,7 +57,7 @@ local function virt_dev(sn)
 end
 
 -- Update Virtual Device Digital Twin
-local function virt_dev_update(sn, virtual_state)
+local function digital_twin_update(sn, virtual_state)
   --update device state
   local resp = Keystore.set({key = device_key(sn), value = to_json(virtual_state)})
 end
@@ -65,7 +65,7 @@ end
 
 -- Digital Twin - Websocket Subscription
 -- Open / Close websocket subscrtiption for a specific device
-local function virt_dev_ws_subscriptions(sn,e)
+local function digital_twin_ws_subscriptions(sn,e)
   local websocket_id = tostring(e.socket_id) .. "/" .. tostring(e.server_ip)
 
   if e.type == "data" then
@@ -83,7 +83,7 @@ end
 
 -- Digital Twin - Websocket Publish
 -- Will send data to any subscribers
-local function virt_dev_ws_publish(sn, msg)
+local function digital_twin_ws_publish(sn, msg)
   -- get list of websockets currently subscribed
   local subscribers = get_kv_list('subscribers_'..device_key(sn))
   --print('ws:subscribers:'.. to_json(subscribers))
@@ -105,9 +105,9 @@ local function virt_dev_ws_publish(sn, msg)
 end
 
 -- Handle new packet of data from physical device
-local function virt_dev_message_handler(sn, message)
+local function digital_twin_message_handler(sn, message)
   -- GET VIRTUAL INSTANCE OF DEVICE (WILL CREATE IF DOES NOT EXIST YET)
-  local virtual_device = virt_dev(sn)
+  local virtual_device = digital_twin(sn)
 
   if type(virtual_device) == "table" then
 
@@ -115,7 +115,7 @@ local function virt_dev_message_handler(sn, message)
     virtual_device.meta.pid = message.pid or virtual_device.meta.pid
     virtual_device.last_data = message.timestamp/1000 or virtual_device.last_data
     virtual_device.state.device[message.alias] = message.value[2]
-    virt_dev_update(sn, virtual_device)
+    digital_twin_update(sn, virtual_device)
 
     -- HANDLE TIMESERIES
     if virtual_device.timeseries[message.alias] then -- check if this is a resource that should be put into TS
@@ -129,15 +129,15 @@ local function virt_dev_message_handler(sn, message)
   end
 
   -- PUBLISH TO SUBSCRIBED WEBSOCKETS
-  virt_dev_ws_publish(sn, '{"type":"data","device":"'.. sn .. '","resource":"'..message.alias..'","value":"'..tostring(message.value[2])..'","ts":'..message.timestamp..'}')
+  digital_twin_ws_publish(sn, '{"type":"data","device":"'.. sn .. '","resource":"'..message.alias..'","value":"'..tostring(message.value[2])..'","ts":'..message.timestamp..'}')
 
 end
 
 -- Write data to Digital Twin and to Physical Device
-local function virt_device_cloud_write(sn, message)
+local function digital_twin_cloud_write(sn, message)
   -- message format = {alias="alias",value=value}
   -- GET VIRTUAL INSTANCE OF DEVICE (WILL CREATE IF DOES NOT EXIST YET)
-  local virtual_device = virt_dev(sn)
+  local virtual_device = digital_twin(sn)
   print('cloud-write:'..sn..':'..to_json(message))
 
   if type(virtual_device) == "table" then
@@ -159,7 +159,7 @@ local function virt_device_cloud_write(sn, message)
     -- UPDATE DEVICE VIRTUAL STATE / META
     virtual_device.state.cloud[message.alias] = message.value
     --print(to_json(virtual_device))
-    virt_dev_update(sn, virtual_device)
+    digital_twin_update(sn, virtual_device)
 
     -- HANDLE TIMESERIES
     if virtual_device.timeseries['cloud_'..message.alias] then -- check if this is a resource that should be put into TS
@@ -175,7 +175,7 @@ local function virt_device_cloud_write(sn, message)
 end
 
 -- Digital Twin time-series data request
-local function virt_dev_ts_query(sn, query_prefix, query_post)
+local function digital_twin_ts_query(sn, query_prefix, query_post)
   -- not doing much with this, could do more logic or checking
   local query_string =  query_prefix.." WHERE identifier = '"..device_key(sn).."' AND " .. query_post
   local resp = Timeseries.query({

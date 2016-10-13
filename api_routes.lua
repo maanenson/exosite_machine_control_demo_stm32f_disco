@@ -10,11 +10,11 @@ if true then
   local data = {}
 
   if getts == 1 then
-    data['timeseries'] = virt_dev_ts_query(identifier, "SELECT value FROM temperature,tempset", "time > now() - "..window.."m LIMIT 5000")
+    data['timeseries'] = digital_twin_ts_query(identifier, "SELECT value FROM temperature,tempset", "time > now() - "..window.."m LIMIT 5000")
   end
 
   if getkv == 1 then
-    local virtual_device = virt_dev(identifier)
+    local virtual_device = digital_twin(identifier)
     data['keyvalue'] = virtual_device
   end
 
@@ -38,11 +38,11 @@ if identifier == nil then
 else
   --print('api-route-request:write:'..identifier..':'..to_json(request.body))
   if request.body.control and tonumber(request.body.control) >= 0 and tonumber(request.body.control) <= 1 then
-    virt_device_cloud_write(identifier, {alias='control',value=request.body.control})
+    digital_twin_cloud_write(identifier, {alias='control',value=request.body.control})
   end
 
   if request.body.tempset and tonumber(request.body.tempset) >= 30 and tonumber(request.body.tempset) <= 120 then
-    virt_device_cloud_write(identifier, {alias='tempset',value=request.body.tempset})
+    digital_twin_cloud_write(identifier, {alias='tempset',value=request.body.tempset})
   end
 
   response.message = 'success'
@@ -56,7 +56,7 @@ end
 local identifier = '00:02:f7:f0:00:00'
 print('subscribe-ws-'..tostring(identifier))
 if identifier ~= nil then
-  return virt_dev_ws_subscriptions(identifier, websocketInfo)
+  return digital_twin_ws_subscriptions(identifier, websocketInfo)
 else
   return '{"type":"info","message":"subscription not opened for device: '..tostring(identifier)..'"}'
 end
@@ -81,7 +81,7 @@ end
 
 --#ENDPOINT GET /debug/storage/keyvalue
 -- Description: Show all key-value data for full solution
--- Key/Value is used to store Device 'Digital Twin' data and App Websocket subscriptions (pub/sub) 
+-- Key/Value is used to store Device 'Digital Twin' data and App Websocket subscriptions (pub/sub)
 -- DEBUG USE ONLY
 if true then
   local response_text = 'Key Value Raw Data for full solution: \r\n'
