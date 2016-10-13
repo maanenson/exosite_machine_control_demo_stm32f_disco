@@ -116,3 +116,7 @@ It is meant to demonstrate interacting with a remote device with Murano Solution
 ## Support
 * General Exosite support should use https://support.exosite.com.
 * Support for this specific demo can be sent to https://community.exosite.com.
+* Found a bug? Feel free to post here [Github Project Issues](https://github.com/maanenson/exosite_machine_control_demo_stm32f_disco/issues)
+
+## Usage Notes
+* Want to send data faster? The device firmware is using a HTTP library and encryption (HTTPS).  The kit attempts to send temperature and status data quickly, but the time to make the request is about 2 to 3 seconds to open the connection, send, close connection.  It is possible to switch to using a socket interface and manually build the HTTP messages, without encryption and this would likely be faster but then you don't have encryption.  It's also possible to update the HTTP library or create something similiar to try to keep the connection open, but this has not been tested yet.  A future update could switch to using MQTT or CoAP interface to Exosite.  
