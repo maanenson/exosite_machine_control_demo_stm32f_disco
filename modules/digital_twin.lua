@@ -27,9 +27,9 @@ local digital_twin_specification = {
 -- provides the key for look-up mapping of device in key-value and time-series
 local function device_key(sn)
   if sn ~= nil and type(sn) == 'string' then
-    return "device_" .. string.gsub(sn, ":", "") -- colons are not supported in KV db in Murano currently
+    return "device-" .. string.gsub(sn, ":", "") -- colons are not supported in KV db in Murano currently
   else
-    return "device_unknown"
+    return "device-unknown"
   end
 end
 
@@ -71,12 +71,12 @@ local function digital_twin_ws_subscriptions(sn,e)
   if e.type == "data" then
     return '{"type":"info","message":"messages from client not supported"}'
   elseif e.type == "open" then
-    put_kv_list('subscribers_'..device_key(sn), websocket_id)
+    put_kv_list('subscribers-'..device_key(sn), websocket_id)
     print('ws open,'..tostring(websocket_id)..',device:'..tostring(sn))
     return '{"type":"info","message":"subscription open for device: '..tostring(sn)..'"}'
   elseif e.type == "close" then
     print('ws close,'..tostring(websocket_id))
-    del_kv_list('subscribers_'..device_key(sn), websocket_id)
+    del_kv_list('subscribers-'..device_key(sn), websocket_id)
 
   end
 end
@@ -85,7 +85,7 @@ end
 -- Will send data to any subscribers
 local function digital_twin_ws_publish(sn, msg)
   -- get list of websockets currently subscribed
-  local subscribers = get_kv_list('subscribers_'..device_key(sn))
+  local subscribers = get_kv_list('subscribers-'..device_key(sn))
   --print('ws:subscribers:'.. to_json(subscribers))
 
   -- send message to each subscriber

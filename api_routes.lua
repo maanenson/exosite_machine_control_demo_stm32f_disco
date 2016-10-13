@@ -84,7 +84,13 @@ end
 -- Key/Value is used to store Device 'Digital Twin' data and App Websocket subscriptions (pub/sub)
 -- DEBUG USE ONLY
 if true then
-  local response_text = 'Key Value Raw Data for full solution: \r\n'
+  local response_text = 'Murano Key Value Information for this Solution\r\n:\r\n'
+  local info_resp = Keystore.info()
+  response_text = response_text.. 'Key Value Usage Informaiton:\r\n'
+  response_text = response_text..':USAGE ->'..to_json(info_resp)..'\r\n'
+  response_text = response_text..':\r\n'
+
+  response_text = response_text.. 'Key Value Raw Data for full solution:\r\n:\r\n'
   local resp = Keystore.list()
   --response_text = response_text..'Solution Keys\r\n'..to_json(resp)..'\r\n'
   if resp['keys'] ~= nil then
@@ -93,8 +99,8 @@ if true then
     while n <= num_keys do
       local id = resp['keys'][n]
       local response = Keystore.get({key = id})
-      response_text = response_text..':Key   ->'..id..'\r\n'
-      response_text = response_text..':Value ->'..to_json(response['value'])..'\r\n'
+      response_text = response_text..':KEY   ->'..id..'\r\n'
+      response_text = response_text..':VALUE ->'..to_json(response['value'])..'\r\n'
 
       n = n + 1
       response_text = response_text..':\r\n'
