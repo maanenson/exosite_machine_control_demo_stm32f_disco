@@ -27,7 +27,7 @@ local digital_twin_specification = {
 -- provides the key for look-up mapping of device in key-value and time-series
 local function device_key(sn)
   if sn ~= nil and type(sn) == 'string' then
-    return "device-" .. string.gsub(sn, ":", "") -- colons are not supported in KV db in Murano currently
+    return "device-" .. sn --leave device ID as
   else
     return "device-unknown"
   end
