@@ -10,5 +10,6 @@
     "device": {
       "datapoint": "service_handlers/product.lua"
     }
-  }
+  },
+  "cors": {"origin": ["http://localhost:*"]}
 }
